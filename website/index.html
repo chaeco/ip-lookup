@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IP Lookup — 轮转公共源 · 归一化结果 · 全类型安全</title>
+  <meta name="description" content="@chaeco/ip-lookup：统一 IP 查询插件。8 个内置公共服务商自动轮转容错，返回归一化 IpLookupResult，支持代理/VPN/Tor 检测。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0f14'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='19' font-weight='700' fill='%2322d3ee' text-anchor='middle'%3E%26gt;_%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <!-- ── 背景氛围：网格 + 光标 ───────────────────────────── -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop__grid"></div>
+    <div class="backdrop__glow"></div>
+  </div>
+
+  <!-- ── 导航 ────────────────────────────────────────────── -->
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="brand" href="#top">
+        <span class="brand__mark" aria-hidden="true">&gt;_</span>
+        <span class="brand__name">ip-lookup</span>
+      </a>
+      <nav class="nav__links" aria-label="页面导航">
+        <a href="#why">为什么</a>
+        <a href="#providers">服务商</a>
+        <a href="#demo">用法</a>
+        <a href="#custom">自定义</a>
+        <a href="#install">安装</a>
+      </nav>
+      <a class="btn btn--solid nav__cta" href="#install">开始使用</a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ── Hero：标语 + 活终端 ────────────────────────────── -->
+    <section class="hero" id="top">
+      <div class="hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow reveal">8 个公共源自动轮转 · 零配置容错</p>
+          <h1 class="hero__title">
+            <span class="line"><span class="word">一个 API</span></span>
+            <span class="line"><span class="word">查询</span><span class="word accent">任何 IP</span></span>
+          </h1>
+          <p class="hero__lead reveal">@chaeco/ip-lookup 把 ip.sb、ipwhois、DB-IP、GeoJS 等 8 个公共 IP 服务商封装成统一接口——失败自动轮转下一个源，返回归一化结果。国家、城市、运营商、ASN、经纬度、代理 / VPN / Tor 标记，一次拿到。</p>
+          <div class="hero__actions reveal">
+            <a class="btn btn--solid" href="#install">npm install @chaeco/ip-lookup</a>
+            <a class="btn btn--ghost" href="#demo">看用法 ↓</a>
+          </div>
+        </div>
+
+        <!-- 活终端：查询 → 轮转 → 归一化结果 -->
+        <div class="terminal reveal" aria-label="IP Lookup 查询演示终端">
+          <div class="terminal__bar">
+            <span class="terminal__dot" aria-hidden="true"></span>
+            <span class="terminal__dot" aria-hidden="true"></span>
+            <span class="terminal__dot" aria-hidden="true"></span>
+            <span class="terminal__title">ip-lookup — lookup.ts</span>
+          </div>
+          <div class="terminal__body">
+            <pre class="terminal__code" id="terminalCode"><code></code></pre>
+            <div class="terminal__output" id="terminalOutput">
+              <div class="terminal__row"><span class="tok-comment">-- 命中的服务商</span></div>
+              <div class="terminal__row tok-sql" id="termSql"></div>
+              <div class="terminal__row"><span class="tok-comment">-- 归一化结果</span></div>
+              <div class="terminal__row tok-param" id="termParams"></div>
+              <div class="terminal__row"><span class="tok-comment">-- 代理 / VPN / Tor</span></div>
+              <div class="terminal__row terminal__result" id="termResult"></div>
+            </div>
+            <div class="terminal__caret" id="terminalCaret" aria-hidden="true">█</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero__scroll-hint" aria-hidden="true">
+        <span>向下滚动</span>
+        <span class="hero__scroll-line"></span>
+      </div>
+    </section>
+
+    <script type="application/json" id="terminalSteps">
+    [
+      {
+        "code": "const self = await lookup.lookupSelf();",
+        "sql":    "provider: \"db-ip\"",
+        "params": "{\n  ip: \"203.0.113.7\",\n  country: \"United States\",\n  countryCode: \"US\",\n  region: \"California\",\n  city: \"Mountain View\"\n}",
+        "result": "isProxy: false · isVpn: false · isTor: false"
+      },
+      {
+        "code": "const info = await lookup.lookupIp('8.8.8.8');",
+        "sql":    "provider: \"ipwhois\"",
+        "params": "{\n  ip: \"8.8.8.8\",\n  country: \"United States\",\n  isp: \"Google LLC\",\n  asn: \"15169\",\n  organization: \"Google LLC\"\n}",
+        "result": "isProxy: false · isVpn: false · isTor: false"
+      },
+      {
+        "code": "const p = await lookup.lookupIp('185.220.101.1'); // Tor",
+        "sql":    "provider: \"geo-js\"",
+        "params": "{\n  ip: \"185.220.101.1\",\n  country: \"Germany\",\n  isp: \"Vektor TOR\",\n  asn: \"25577\"\n}",
+        "result": "isProxy: true · isVpn: true · isTor: true"
+      }
+    ]
+    </script>
+
+    <!-- ── 事实带：真实数字 ───────────────────────────────── -->
+    <section class="facts" aria-label="IP Lookup 关键事实">
+      <div class="facts__inner">
+        <div class="fact">
+          <span class="fact__value" data-count="8">0</span>
+          <span class="fact__label">内置服务商</span>
+        </div>
+        <div class="fact">
+          <span class="fact__value fact__value--mono">16</span>
+          <span class="fact__label">归一化字段</span>
+        </div>
+        <div class="fact">
+          <span class="fact__value fact__value--mono">≥18</span>
+          <span class="fact__label">Node 版本要求</span>
+        </div>
+        <div class="fact">
+          <span class="fact__value fact__value--mono">98%</span>
+          <span class="fact__label">语句覆盖率</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 为什么：三个主张 ───────────────────────────────── -->
+    <section class="why section" id="why">
+      <div class="section__head">
+        <p class="eyebrow">为什么是 ip-lookup</p>
+        <h2 class="section__title">公共 IP 源很多，麻烦也很多。</h2>
+        <p class="section__sub">每家格式不同、字段缺失、说挂就挂。ip-lookup 把这一切收敛成一个 Promise。</p>
+      </div>
+      <div class="why__grid">
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">→</div>
+          <h3 class="card__title">统一结果</h3>
+          <p class="card__body">无论哪个服务商命中，返回的都是同一个 <code>IpLookupResult</code>。字段用归一化工具兜底——数字当字符串来、字符串当数字来，都能安全转换。</p>
+          <pre class="card__code"><code><span class="tok-var">const</span> info = <span class="tok-var">await</span> lookup.lookupIp(<span class="tok-str">'8.8.8.8'</span>);
+<span class="tok-comment">// { ip, country, isp, asn, latitude, … }</span></code></pre>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">↻</div>
+          <h3 class="card__title">自动轮转</h3>
+          <p class="card__body">网络错误、超时、解析失败——任一源失败自动落到下一个兼容源。成功之后游标前进，下次从不同服务商开始，天然分摊负载。</p>
+          <pre class="card__code"><code><span class="tok-comment">// ip.sb 挂了 → ipwhois → freeipapi …</span>
+<span class="tok-var">const</span> self = <span class="tok-var">await</span> lookup.lookupSelf();</code></pre>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">!</div>
+          <h3 class="card__title">安全标记</h3>
+          <p class="card__body">代理、VPN、Tor 出口节点标记是查询结果的一等公民——不靠猜，直接读每个服务商的公开字段。</p>
+          <pre class="card__code"><code><span class="tok-var">if</span> (info.isProxy) {
+  <span class="tok-comment">// 风控逻辑从这里开始</span>
+}</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── 服务商一览 ─────────────────────────────────────── -->
+    <section class="arch section" id="providers">
+      <div class="section__head">
+        <p class="eyebrow">内置服务商</p>
+        <h2 class="section__title">八个源，按需轮转。</h2>
+        <p class="section__sub">每个服务商声明自己的能力：能否查本机 IP、能否查指定 IP、响应是 JSON 还是文本。插件只调用兼容的源。</p>
+      </div>
+
+      <div class="arch__figure reveal">
+        <h3 class="arch__fig-title">Provider 能力矩阵 <span class="arch__tag">8 built-in</span></h3>
+        <div class="arch__matrix">
+          <div class="matrix__row matrix__row--head">
+            <span class="matrix__cell">Provider</span>
+            <span class="matrix__cell">Self</span>
+            <span class="matrix__cell">IP</span>
+            <span class="matrix__cell">Type</span>
+          </div>
+          <div class="matrix__row"><span class="matrix__cell">ip.sb</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell">json</span></div>
+          <div class="matrix__row"><span class="matrix__cell">ipwhois</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell">json</span></div>
+          <div class="matrix__row"><span class="matrix__cell">freeipapi</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell">json</span></div>
+          <div class="matrix__row"><span class="matrix__cell">DB-IP</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell">json</span></div>
+          <div class="matrix__row"><span class="matrix__cell">GeoJS</span><span class="matrix__cell matrix__no">—</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell">json</span></div>
+          <div class="matrix__row"><span class="matrix__cell">ipapi.is</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell">json</span></div>
+          <div class="matrix__row"><span class="matrix__cell">ipify</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell matrix__no">—</span><span class="matrix__cell">json</span></div>
+          <div class="matrix__row"><span class="matrix__cell">Cloudflare Trace</span><span class="matrix__cell matrix__ok">✓</span><span class="matrix__cell matrix__no">—</span><span class="matrix__cell">text</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 用法演示：交互 Tab ─────────────────────────────── -->
+    <section class="demo section" id="demo">
+      <div class="section__head">
+        <p class="eyebrow">用法</p>
+        <h2 class="section__title">两行代码，一个 Promise。</h2>
+        <p class="section__sub">查本机、查指定 IP、处理全部失败——覆盖三个核心场景。</p>
+      </div>
+
+      <div class="demo__tabs" role="tablist" aria-label="用法示例">
+        <button class="demo__tab is-active" role="tab" aria-selected="true" aria-controls="tab-self" data-tab="self">查本机</button>
+        <button class="demo__tab" role="tab" aria-selected="false" aria-controls="tab-ip" data-tab="ip">查指定 IP</button>
+        <button class="demo__tab" role="tab" aria-selected="false" aria-controls="tab-err" data-tab="err">错误处理</button>
+      </div>
+
+      <div class="demo__panel is-active" id="tab-self" role="tabpanel" data-panel="self">
+        <pre class="demo__code"><code><span class="tok-var">import</span> { createIpLookupPlugin } from <span class="tok-str">'@chaeco/ip-lookup'</span>;
+
+<span class="tok-var">const</span> lookup = createIpLookupPlugin();
+
+<span class="tok-comment">// 查询当前公网 IP 信息</span>
+<span class="tok-var">const</span> self = <span class="tok-var">await</span> lookup.lookupSelf();
+console.log(self.ip, self.country, self.isp);
+<span class="tok-comment">// → 203.0.113.7  China  China Telecom</span></code></pre>
+      </div>
+
+      <div class="demo__panel" id="tab-ip" role="tabpanel" data-panel="ip">
+        <pre class="demo__code"><code><span class="tok-comment">// 查询指定 IP —— 例如风控 / 审计场景</span>
+<span class="tok-var">const</span> info = <span class="tok-var">await</span> lookup.lookupIp(<span class="tok-str">'8.8.8.8'</span>);
+
+console.log(info.countryCode, info.asn);
+<span class="tok-comment">// → US  15169</span>
+
+<span class="tok-comment">// 代理 / VPN / Tor 标记</span>
+<span class="tok-var">if</span> (info.isProxy || info.isTor) {
+  <span class="tok-comment">// 命中异常流量</span>
+}</code></pre>
+      </div>
+
+      <div class="demo__panel" id="tab-err" role="tabpanel" data-panel="err">
+        <pre class="demo__code"><code><span class="tok-var">import</span> { IpLookupError, createIpLookupPlugin } from <span class="tok-str">'@chaeco/ip-lookup'</span>;
+
+<span class="tok-var">try</span> {
+  <span class="tok-var">const</span> result = <span class="tok-var">await</span> lookup.lookupSelf();
+} <span class="tok-var">catch</span> (error) {
+  <span class="tok-var">if</span> (error <span class="tok-var">instanceof</span> IpLookupError) {
+    <span class="tok-comment">// 每个源失败的原因都保留</span>
+    console.error(<span class="tok-str">'All providers failed:'</span>, error.reasons);
+  }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ── 自定义 Provider ────────────────────────────────── -->
+    <section class="custom section" id="custom">
+      <div class="section__head">
+        <p class="eyebrow">扩展</p>
+        <h2 class="section__title">内置源不够？写一个 Provider 即可。</h2>
+        <p class="section__sub">实现 5 个字段的接口，你的数据源就和内置源一样参与轮转。</p>
+      </div>
+
+      <pre class="custom__code reveal"><code><span class="tok-var">import</span> { createIpLookupPlugin } from <span class="tok-str">'@chaeco/ip-lookup'</span>;
+<span class="tok-var">import</span> <span class="tok-var">type</span> { IpLookupProvider } from <span class="tok-str">'@chaeco/ip-lookup'</span>;
+
+<span class="tok-var">const</span> myProvider: IpLookupProvider = {
+  name: <span class="tok-str">'my-provider'</span>,
+  modes: [<span class="tok-str">'self'</span>, <span class="tok-str">'ip'</span>],        <span class="tok-comment">// 支持的能力</span>
+  responseType: <span class="tok-str">'json'</span>,           <span class="tok-comment">// json | text</span>
+  buildUrl: (ctx) => <span class="tok-tpl">`https://api.example.com/${ctx.ip ?? ''}`</span>,
+  parse: (raw) =&gt; {               <span class="tok-comment">// 归一化到统一结果</span>
+    <span class="tok-var">const</span> data = raw <span class="tok-var">as</span> Record&lt;string, unknown&gt;;
+    <span class="tok-var">return</span> { ip: String(data.ip ?? <span class="tok-str">''</span>), country: String(data.country ?? <span class="tok-str">''</span>), provider: <span class="tok-str">'my-provider'</span>, raw };
+  },
+};
+
+<span class="tok-var">const</span> lookup = createIpLookupPlugin({ providers: [myProvider] });</code></pre>
+    </section>
+
+    <!-- ── 安装 / CTA ─────────────────────────────────────── -->
+    <section class="cta section" id="install">
+      <div class="cta__box">
+        <p class="eyebrow">开始使用</p>
+        <h2 class="cta__title">八个公共源，一次安装。</h2>
+        <pre class="cta__cmd"><code>$ npm install @chaeco/ip-lookup</code><span class="cta__cursor" aria-hidden="true"></span></pre>
+        <p class="cta__note">Node.js ≥ 18 · 仅依赖 axios · MIT</p>
+        <div class="cta__actions">
+          <a class="btn btn--solid" href="https://github.com/chaeco/ip-lookup" target="_blank" rel="noopener">GitHub →</a>
+          <a class="btn btn--ghost" href="https://github.com/chaeco/ip-lookup#readme" target="_blank" rel="noopener">阅读文档</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span class="brand"><span class="brand__mark" aria-hidden="true">&gt;_</span> ip-lookup</span>
+      <p>8 个内置公共源 · 自动轮转 · 归一化结果</p>
+      <p class="footer__meta">MIT License · 全 TypeScript 类型安全</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

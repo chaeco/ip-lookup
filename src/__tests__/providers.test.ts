@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { defaultProviders } from '../providers.js'
+import { defaultProviders } from '../providers'
 
 describe('defaultProviders', () => {
   it('has 8 providers', () => {

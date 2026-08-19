@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import { IpLookupPlugin } from '../plugin.js'
-import type { IpLookupProvider } from '../types.js'
+import { IpLookupPlugin } from '../plugin'
+import type { IpLookupProvider } from '../types'
 
 vi.mock('axios', async () => {
   const actual = await vi.importActual<typeof import('axios')>('axios')

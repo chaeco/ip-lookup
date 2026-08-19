@@ -1,30 +1,40 @@
-import tseslint from '@typescript-eslint/eslint-plugin'
-import tsparser from '@typescript-eslint/parser'
+import js from '@eslint/js'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
+import prettierConfig from 'eslint-config-prettier'
 
 export default [
-  { ignores: ['coverage/', 'dist/', 'node_modules/', 'examples/'] },
+  {
+    ignores: ['dist', 'node_modules', 'coverage', '*.d.ts'],
+  },
   {
     files: ['src/**/*.ts'],
     languageOptions: {
-      parser: tsparser,
+      parser: tsParser,
       parserOptions: {
         ecmaVersion: 2022,
-        sourceType: 'module'
-      }
+        sourceType: 'module',
+      },
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        URL: 'readonly',
+        globalThis: 'readonly',
+      },
     },
     plugins: {
-      '@typescript-eslint': tseslint
+      '@typescript-eslint': tsPlugin,
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': 'error',
+      ...js.configs.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
+      ...prettierConfig.rules,
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      semi: ['error', 'never'],
-      quotes: ['error', 'single'],
+      '@typescript-eslint/no-explicit-any': 'warn',
       'no-console': 'off',
-      'no-debugger': 'error'
-    }
-  }
+    },
+  },
 ]

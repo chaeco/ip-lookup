@@ -1,7 +1,7 @@
 import axios, { AxiosError, type AxiosInstance, type AxiosResponse } from 'axios'
 
-import { defaultProviders } from './providers.js'
-import type { IpLookupMode, IpLookupOptions, IpLookupProvider, IpLookupResult } from './types.js'
+import { defaultProviders } from './providers'
+import type { IpLookupMode, IpLookupOptions, IpLookupProvider, IpLookupResult } from './types'
 
 /** IP 查询错误 */
 export class IpLookupError extends Error {
@@ -34,7 +34,7 @@ export class IpLookupPlugin {
       maxRedirects: 3,
       headers: {
         Accept: 'application/json,text/plain,*/*',
-        'User-Agent': 'ZorvethIpLookup/0.1.0',
+        'User-Agent': 'ZorvethIpLookup/0.1.1',
       },
     })
   }

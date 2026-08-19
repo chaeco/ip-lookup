@@ -6,7 +6,7 @@ import {
   toBooleanValue,
   normalizeAsn,
   getRecord,
-} from '../normalize.js'
+} from '../normalize'
 
 describe('isRecord', () => {
   it('returns true for plain objects', () => {

@@ -1,5 +1,5 @@
-export { IpLookupError, IpLookupPlugin, createIpLookupPlugin } from './plugin.js'
-export { defaultProviders } from './providers.js'
+export { IpLookupError, IpLookupPlugin, createIpLookupPlugin } from './plugin'
+export { defaultProviders } from './providers'
 export type {
   IpLookupContext,
   IpLookupMode,
@@ -7,4 +7,4 @@ export type {
   IpLookupProvider,
   IpLookupResult,
   ProviderResponseType,
-} from './types.js'
+} from './types'

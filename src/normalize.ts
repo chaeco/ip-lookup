@@ -1,4 +1,4 @@
-import type { IpLookupResult } from './types.js'
+import type { IpLookupResult } from './types'
 
 /** 字符串字典 */
 type RawRecord = Record<string, unknown>

@@ -7,14 +7,15 @@ export default defineConfig({
     include: ['src/**/__tests__/**/*.test.ts'],
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'lcov', 'html'],
       include: ['src/**/*.ts'],
       exclude: ['src/**/__tests__/**', 'src/**/*.d.ts'],
       thresholds: {
         lines: 90,
         functions: 90,
         statements: 90,
-        branches: 80
-      }
-    }
-  }
+        branches: 80,
+      },
+    },
+  },
 })

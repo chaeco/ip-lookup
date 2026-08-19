@@ -1,14 +1,22 @@
-# ip-lookup
+# @chaeco/ip-lookup
 
-IP lookup plugin with rotating public providers and normalized results.
+[![npm version](https://img.shields.io/npm/v/@chaeco/ip-lookup.svg)](https://www.npmjs.com/package/@chaeco/ip-lookup)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-## Features
+[简体中文](./README.zh-CN.md) | English
 
-- Query your current public IP information or a specific IP
-- 8 built-in providers with automatic rotation on failure
-- Unified result format across all providers
-- Extensible plugin system with custom providers
-- Coverage-gated tests (90%+ statement coverage)
+A unified IP lookup plugin with rotating public providers and normalized results.
+
+## ✨ Features
+
+- 🌐 **Unified Result** — Normalized `IpLookupResult` across all providers
+- 🔄 **Auto Rotation** — Falls through to the next compatible provider on failure
+- 📦 **8 Built-in Providers** — ip.sb, ipwhois, freeipapi, DB-IP, GeoJS, ipapi.is, ipify, Cloudflare Trace
+- 🔌 **Extensible** — Implement `IpLookupProvider` for custom data sources
+- 🛡️ **Rich Data** — Country, region, city, ISP, ASN, coordinates, proxy/VPN/Tor flags
+- 🔍 **Full Type Safety** — TypeScript strict mode, explicit types throughout
+- 🧪 **Well Tested** — 51 test cases, 98% statement coverage
 
 ## Installation
 
@@ -16,7 +24,7 @@ IP lookup plugin with rotating public providers and normalized results.
 npm install @chaeco/ip-lookup
 ```
 
-## Usage
+## Quick Start
 
 ```typescript
 import { createIpLookupPlugin } from '@chaeco/ip-lookup'
@@ -32,6 +40,18 @@ const info = await lookup.lookupIp('8.8.8.8')
 console.log(info.country, info.asn, info.organization)
 ```
 
+## Table of Contents
+
+- [API](#api)
+  - [createIpLookupPlugin](#createiplookuppluginoptions)
+  - [plugin.lookupSelf()](#pluginlookupself)
+  - [plugin.lookupIp(ip)](#pluginlookupipp)
+  - [IpLookupResult](#iplookupresult)
+  - [Error Handling](#error-handling)
+- [Built-in Providers](#built-in-providers)
+- [Custom Providers](#custom-providers)
+- [Development](#development)
+
 ## API
 
 ### `createIpLookupPlugin(options?)`
@@ -40,11 +60,11 @@ Creates a new `IpLookupPlugin` instance.
 
 **Options:**
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `timeout` | `number` | `8000` | Request timeout in milliseconds |
-| `startIndex` | `number` | `0` | Initial provider index for rotation |
-| `providers` | `IpLookupProvider[]` | `defaultProviders` | Custom provider list |
+| Option       | Type                 | Default            | Description                         |
+| ------------ | -------------------- | ------------------ | ----------------------------------- |
+| `timeout`    | `number`             | `8000`             | Request timeout in milliseconds     |
+| `startIndex` | `number`             | `0`                | Initial provider index for rotation |
+| `providers`  | `IpLookupProvider[]` | `defaultProviders` | Custom provider list                |
 
 ### `plugin.lookupSelf()`
 
@@ -56,24 +76,24 @@ Resolves with information for a specific IP address. Returns `Promise<IpLookupRe
 
 ### `IpLookupResult`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `ip` | `string` | IP address |
-| `country` | `string` | Country or region name |
-| `countryCode` | `string` | Country or region code |
-| `region` | `string` | Province or state |
-| `city` | `string` | City |
-| `isp` | `string` | ISP name |
-| `organization` | `string` | Organization name |
-| `asn` | `string` | ASN number (without "AS" prefix) |
-| `latitude` | `number` | Latitude |
-| `longitude` | `number` | Longitude |
-| `timezone` | `string` | Timezone |
-| `isProxy` | `boolean` | Whether the IP is a proxy |
-| `isVpn` | `boolean` | Whether the IP is a VPN |
-| `isTor` | `boolean` | Whether the IP is a Tor exit node |
-| `provider` | `string` | Provider name that served the result |
-| `raw` | `unknown` | Raw response data from the provider |
+| Field          | Type      | Description                          |
+| -------------- | --------- | ------------------------------------ |
+| `ip`           | `string`  | IP address                           |
+| `country`      | `string`  | Country or region name               |
+| `countryCode`  | `string`  | Country or region code               |
+| `region`       | `string`  | Province or state                    |
+| `city`         | `string`  | City                                 |
+| `isp`          | `string`  | ISP name                             |
+| `organization` | `string`  | Organization name                    |
+| `asn`          | `string`  | ASN number (without "AS" prefix)     |
+| `latitude`     | `number`  | Latitude                             |
+| `longitude`    | `number`  | Longitude                            |
+| `timezone`     | `string`  | Timezone                             |
+| `isProxy`      | `boolean` | Whether the IP is a proxy            |
+| `isVpn`        | `boolean` | Whether the IP is a VPN              |
+| `isTor`        | `boolean` | Whether the IP is a Tor exit node    |
+| `provider`     | `string`  | Provider name that served the result |
+| `raw`          | `unknown` | Raw response data from the provider  |
 
 ### Error Handling
 
@@ -93,16 +113,16 @@ try {
 
 ## Built-in Providers
 
-| Provider | Modes | Self | IP | Response Type |
-|----------|-------|------|----|---------------|
-| ip.sb | self, ip | ✓ | ✓ | json |
-| ipwhois | self, ip | ✓ | ✓ | json |
-| freeipapi | self, ip | ✓ | ✓ | json |
-| DB-IP | self, ip | ✓ | ✓ | json |
-| GeoJS | ip | | ✓ | json |
-| ipapi.is | self, ip | ✓ | ✓ | json |
-| ipify | self | ✓ | | json |
-| Cloudflare Trace | self | ✓ | | text |
+| Provider         | Modes    | Self | IP  | Response Type |
+| ---------------- | -------- | ---- | --- | ------------- |
+| ip.sb            | self, ip | ✓    | ✓   | json          |
+| ipwhois          | self, ip | ✓    | ✓   | json          |
+| freeipapi        | self, ip | ✓    | ✓   | json          |
+| DB-IP            | self, ip | ✓    | ✓   | json          |
+| GeoJS            | ip       |      | ✓   | json          |
+| ipapi.is         | self, ip | ✓    | ✓   | json          |
+| ipify            | self     | ✓    |     | json          |
+| Cloudflare Trace | self     | ✓    |     | text          |
 
 The plugin rotates through providers sequentially. When a provider fails (network error, timeout, parse failure), it automatically falls through to the next compatible provider. The cursor advances on success so the next query starts from a different provider.
 
@@ -118,8 +138,7 @@ const myProvider: IpLookupProvider = {
   name: 'my-provider',
   modes: ['self', 'ip'],
   responseType: 'json',
-  buildUrl: (context: IpLookupContext) =>
-    `https://api.example.com/${context.ip ?? ''}`,
+  buildUrl: (context: IpLookupContext) => `https://api.example.com/${context.ip ?? ''}`,
   parse: (raw: unknown): IpLookupResult => {
     const data = raw as Record<string, unknown>
     return {

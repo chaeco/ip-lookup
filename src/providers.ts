@@ -6,8 +6,8 @@ import {
   toBooleanValue,
   toNumberValue,
   toStringValue,
-} from './normalize.js'
-import type { IpLookupContext, IpLookupProvider, IpLookupResult } from './types.js'
+} from './normalize'
+import type { IpLookupContext, IpLookupProvider, IpLookupResult } from './types'
 
 /** 解析 ip.sb 返回值 */
 const parseIpSb = (raw: unknown): IpLookupResult => {
