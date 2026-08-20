@@ -1,6 +1,6 @@
 {
   "name": "@chaeco/ip-lookup",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A unified IP lookup plugin with rotating public providers and normalized results",
   "keywords": [
     "ip",

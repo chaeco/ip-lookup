@@ -34,7 +34,7 @@ export class IpLookupPlugin {
       maxRedirects: 3,
       headers: {
         Accept: 'application/json,text/plain,*/*',
-        'User-Agent': 'ZorvethIpLookup/0.1.1',
+        'User-Agent': 'ZorvethIpLookup/0.1.2',
       },
     })
   }

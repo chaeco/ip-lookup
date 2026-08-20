@@ -80,7 +80,9 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist is intentionally committed so JS projects can consume the package
+# dist/index.js is the published artifact; silence the bare dist rule.
+# dist
 .output
 
 # Gatsby files
